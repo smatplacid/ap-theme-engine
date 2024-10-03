@@ -155,7 +155,8 @@ class Alpha_Projekt {
 		$plugin_admin = new Alpha_Projekt_Admin( $this->get_plugin_name(), $this->get_version() );
 
         // Admin Widget
-        $this->loader->add_action('admin_init', $plugin_admin, 'apro_dashboard_widget');
+#        $this->loader->add_action('admin_init', $plugin_admin, 'apro_dashboard_widget');
+        $this->loader->add_action('wp_dashboard_setup', $plugin_admin, 'apro_dashboard_widget');
 
 
         $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );

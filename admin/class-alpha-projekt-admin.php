@@ -52,39 +52,120 @@ class Alpha_Projekt_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 
-        add_action('wp_dashboard_setup', array($this, 'apro_dashboard_widget'));
+#        add_action( 'wp_dashboard_setup', array( $this, 'check_and_add_dashboard_widget' ) );
 
+        if ( apro_is_it_god() ) {
+            add_action('wp_dashboard_setup', array($this, 'apro_dashboard_widget'));
+        }
+    }
+
+    public function check_and_add_dashboard_widget() {
+        if ( $this->apro_is_it_god() ) {
+            $this->apro_dashboard_widget();
+        }
     }
 
     // Widget registrieren
     public function apro_dashboard_widget() {
         wp_add_dashboard_widget(
-            'apro_dashboard_widget',       // Widget-ID
-            'Custom Dashboard Widget',     // Widget-Titel
-            array($this, 'apro_dashboard_widget_content')  // Inhalt des Widgets
+            'apro_dashboard_widget',                // Widget-ID
+            'WordPress Webdesign Widget',        // Widget-Titel
+            array($this, 'apro_dashboard_widget_content')   // Inhalt des Widgets
         );
     }
 
     // Inhalt des Widgets
     public function apro_dashboard_widget_content() {
-        echo '<p>This is a custom dashboard widget content</p>';
-        echo '<form method="post">';
-        submit_button('Deaktivierte Plugins löschen');
-        echo '</form>';
+        $disabled_plugins = $this->apro_get_disabled_plugins();
+
+        echo '<p>Mission Control</p>';
+
+        if ( empty( $disabled_plugins ) ) {
+            echo '<form method="post">';
+            wp_nonce_field( 'delete_disabled_plugins_nonce_action', 'delete_disabled_plugins_nonce' );
+            submit_button('Keine deaktivierten Plugins vorhanden', 'primary', 'submit', true, ['disabled' => 'disabled']);
+            echo '</form>';
+        } else {
+            echo '<form method="post">';
+            wp_nonce_field( 'delete_disabled_plugins_nonce_action', 'delete_disabled_plugins_nonce' );
+            submit_button('Deaktivierte Plugins löschen');
+            echo '</form>';
+        }
 
         // Wenn der Button gedrückt wurde
-        if (isset($_POST['submit'])) {
-            $this->delete_disabled_plugins();
+        if ( isset($_POST['delete_disabled_plugins_nonce']) && wp_verify_nonce( $_POST['delete_disabled_plugins_nonce'], 'delete_disabled_plugins_nonce_action' ) ) {
+            $this->apro_delete_disabled_plugins();
         }
     }
 
-    // Funktion zum Löschen deaktivierter Plugins
-    private function delete_disabled_plugins() {
-        // Plugin-Löschlogik hier einfügen
-        echo '<p>Deaktivierte Plugins wurden gelöscht!</p>';
+    // Funktion zum Abrufen deaktivierter Plugins
+    private function apro_get_disabled_plugins() {
+        include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
+        $all_plugins = get_plugins();
+        $disabled_plugins = [];
+
+        foreach ( $all_plugins as $plugin_file => $plugin_data ) {
+            if ( !is_plugin_active( $plugin_file ) ) {
+                $disabled_plugins[] = $plugin_file;
+            }
+        }
+
+        return $disabled_plugins;
     }
 
-	/**
+    // Funktion zum Löschen deaktivierter Plugins
+    private function apro_delete_disabled_plugins() {
+        if ( ! current_user_can( 'activate_plugins' ) ) {
+            return;
+        }
+
+        include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
+        $all_plugins = get_plugins();
+        $deleted_plugins = [];
+
+        foreach ( $all_plugins as $plugin_file => $plugin_data ) {
+            if ( !is_plugin_active( $plugin_file ) ) {
+                // Lösche nur das Plugin, keine Sprachdateien
+                if ( strpos( $plugin_file, 'languages' ) === false ) {
+                    delete_plugins( [$plugin_file] );
+                    $deleted_plugins[] = $plugin_data['Name'];
+                }
+            }
+        }
+
+        if ( empty( $deleted_plugins ) ) {
+            echo '<p>Keine Plugins gelöscht.</p>';
+        } else {
+            echo '<p>Folgende Plugins wurden gelöscht:</p>';
+            echo '<ul>';
+            foreach ( $deleted_plugins as $plugin_name ) {
+                echo '<li>' . esc_html( $plugin_name ) . '</li>';
+            }
+            echo '</ul>';
+        }
+    }
+
+    /**
+     * Check if current user is God.
+     *
+     * @since    1.0.0
+
+    private function apro_is_it_god() {
+        $current_user = wp_get_current_user();
+
+        if ( $current_user && $current_user->user_login === 'r.hanzlik' ) {
+            return true;
+        }
+
+        return false;
+    }
+*/
+
+
+
+    /**
 	 * Register the stylesheets for the admin area.
 	 *
 	 * @since    1.0.0
@@ -130,4 +211,9 @@ class Alpha_Projekt_Admin {
 
 	}
 
+}
+
+function apro_is_it_god() {
+    $current_user = wp_get_current_user();
+    return ( $current_user && $current_user->user_login === 'r.hanzlik' );
 }
