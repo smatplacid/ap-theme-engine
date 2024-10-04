@@ -72,7 +72,7 @@ class Alpha_Projekt_Admin {
     public function apro_dashboard_widget_content() {
         $disabled_plugins = $this->apro_get_disabled_plugins();
 
-        echo '<p>Mission Control</p>';
+        echo '<p>Mission Control Admin</p>';
 
         if ( empty( $disabled_plugins ) ) {
             echo '<form method="post">';

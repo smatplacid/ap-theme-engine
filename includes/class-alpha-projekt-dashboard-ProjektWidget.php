@@ -25,7 +25,7 @@ class Alpha_Projekt_Widget extends WP_Widget {
     public function apro_dashboard_widget_content() {
         $disabled_plugins = $this->apro_get_disabled_plugins();
 
-        echo '<p>Mission Control</p>';
+        echo '<p>Mission Control Class</p>';
 
         if ( empty( $disabled_plugins ) ) {
             echo '<form method="post">';
