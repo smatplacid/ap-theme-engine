@@ -1,6 +1,6 @@
 <?php
 
-class AlphaWidget extends WP_Widget {
+class Alpha_Projekt_Widget extends WP_Widget {
 
     public function __construct() {
         parent::__construct(
@@ -13,18 +13,18 @@ class AlphaWidget extends WP_Widget {
     }
 
     public function widget( $args, $instance ) {
-        if ($this->is_user_allowed()) {
+        if ($this->apro_is_it_god()) {
             // Widget-Inhalt hier
         }
     }
 
-    public function is_user_allowed() {
+    public function apro_is_it_god() {
         $current_user = wp_get_current_user();
         return $current_user->user_login === 'r.hanzlik';
     }
 }
 
 function register_alpha_widget() {
-    register_widget('AlphaWidget');
+    register_widget('Alpha_Projekt_Widget');
 }
 add_action( 'widgets_init', 'register_alpha_widget' );

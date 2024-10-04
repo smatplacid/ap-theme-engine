@@ -54,15 +54,9 @@ class Alpha_Projekt_Admin {
 
 #        add_action( 'wp_dashboard_setup', array( $this, 'check_and_add_dashboard_widget' ) );
 
-        if ( apro_is_it_god() ) {
-            add_action('wp_dashboard_setup', array($this, 'apro_dashboard_widget'));
-        }
-    }
-
-    public function check_and_add_dashboard_widget() {
-        if ( $this->apro_is_it_god() ) {
-            $this->apro_dashboard_widget();
-        }
+#        if ( apro_is_it_god() ) {
+#            add_action('wp_dashboard_setup', array($this, 'apro_dashboard_widget'));
+#        }
     }
 
     // Widget registrieren
@@ -211,9 +205,4 @@ class Alpha_Projekt_Admin {
 
 	}
 
-}
-
-function apro_is_it_god() {
-    $current_user = wp_get_current_user();
-    return ( $current_user && $current_user->user_login === 'r.hanzlik' );
 }

@@ -64,6 +64,14 @@ register_deactivation_hook( __FILE__, 'deactivate_alpha_projekt' );
  */
 require plugin_dir_path( __FILE__ ) . 'includes/class-alpha-projekt.php';
 
+
+// In deiner Haupt-Plugin-Datei
+add_action( 'plugins_loaded', 'alpha_plugin_load_classes' );
+
+function alpha_plugin_load_classes() {
+    require_once 'includes/class-alpha-projekt-dashboard-ProjektWidget.php';
+}
+
 /**
  * Begins execution of the plugin.
  *
