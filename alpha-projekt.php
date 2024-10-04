@@ -69,7 +69,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-alpha-projekt.php';
 add_action( 'plugins_loaded', 'alpha_plugin_load_classes' );
 
 function alpha_plugin_load_classes() {
-    require_once 'includes/class-alpha-projekt-dashboard-ProjektWidget.php';
+    require_once 'includes/class-alpha-projekt-dashboard-widget.php';
 }
 
 /**
